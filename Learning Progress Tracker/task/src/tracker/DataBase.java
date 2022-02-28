@@ -1,17 +1,27 @@
 package tracker;
 
-import java.util.ArrayList;
+import tracker.Users.Student;
+
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class DataBase {
-
-    private final ArrayList<HashMap<String, String>> database = new ArrayList<>();
+    private int idPerson = 9999;
+    private final HashMap<Integer, Student> studentDatabase = new HashMap<>();
 
     void addStudent(HashMap<String, String> dataStudent) {
-        database.add(dataStudent);
+        idPerson++;
+        Student student = new Student(dataStudent.get("FirstName"), dataStudent.get("LastName"),
+                dataStudent.get("Email"), idPerson);
+        studentDatabase.put(idPerson, student);
     }
 
-    public ArrayList<HashMap<String, String>> getDatabase() {
-        return database;
+    public HashMap<Integer, Student> getDatabase() {
+        return studentDatabase;
+    }
+
+    public Student getStudent(int idStudent) {
+        return studentDatabase.get(idStudent);
     }
 }
