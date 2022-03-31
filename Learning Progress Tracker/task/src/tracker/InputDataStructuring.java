@@ -2,7 +2,7 @@ package tracker;
 
 import java.util.HashMap;
 
-public class DataStructuring {
+public class InputDataStructuring {
 
     static HashMap<String, String> studentDataStructuring(String inputData) {
         HashMap<String, String> dataStructuring = new HashMap<>();
