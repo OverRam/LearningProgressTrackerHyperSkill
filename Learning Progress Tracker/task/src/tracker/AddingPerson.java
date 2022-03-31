@@ -4,56 +4,48 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class AddingPerson {
-    private final DataBase dataBase;
+    private final PersonDataBase personDataBase;
 
-    public AddingPerson(DataBase dataBase) {
-        this.dataBase = dataBase;
+    public AddingPerson(PersonDataBase personDataBase) {
+        this.personDataBase = personDataBase;
     }
 
-    void addStudents() {
-        addUsersData(3, "student");
-
-    }
-
-    void addEmployees() {
-        addUsersData(4, "employee");
-    }
-
-    private void addUsersData(int userParams, String whoBeAdded) {
+    void tryAddUsersData() {
         Scanner sc = new Scanner(System.in);
 
         String personData = "";
         boolean isAdded;
         int numberOfAddedStudents = 0;
-        System.out.printf("Enter %s credentials or 'back' to return:\n", whoBeAdded);
+        System.out.printf("Enter %s credentials or 'back' to return:\n", "student");
 
         while (!personData.equalsIgnoreCase("back")) {
             personData = sc.nextLine().strip();
+
 
             if (personData.equalsIgnoreCase("back")) {
                 break;
             }
 
-            if (personData.split(" ").length >= userParams) {
-                isAdded = checkPersonData(personData, dataBase);
+            if (personData.split(" ").length >= 3) {
+                isAdded = checkPersonData(personData, personDataBase);
                 if (isAdded) {
                     numberOfAddedStudents++;
-                    System.out.printf("The %s has been added.\n", whoBeAdded);
+                    System.out.printf("The %s has been added.\n", "student");
                 }
             } else {
                 System.out.println("Incorrect credentials.");
             }
         }
-        System.out.printf("Total %d %ss have been added.\n", numberOfAddedStudents, whoBeAdded);
+        System.out.printf("Total %d %ss have been added.\n", numberOfAddedStudents, "student");
     }
 
-    private boolean checkPersonData(String personData, DataBase dataBase) {
-        HashMap<String, String> personStructuredData = DataStructuring.studentDataStructuring(personData);
+    private boolean checkPersonData(String personData, PersonDataBase personDataBase) {
+        HashMap<String, String> personStructuredData = InputDataStructuring.studentDataStructuring(personData);
 
-        if (!personData.isBlank() || dataBase != null || CheckData.checkNullInStructuredData(personStructuredData)) {
-            assert dataBase != null;
+        if (!personData.isBlank() || personDataBase != null || CheckData.checkNullInStructuredData(personStructuredData)) {
+            assert personDataBase != null;
 
-            boolean isTakenEmail = dataBase.getDatabase()
+            boolean isTakenEmail = personDataBase.getDatabase()
                     .entrySet().stream()
                     .anyMatch(e -> e.getValue().getEmail().equalsIgnoreCase(personStructuredData.get("Email")));
 
@@ -63,7 +55,7 @@ public class AddingPerson {
             }
 
             if (CheckData.nullCheckerStructure(personStructuredData)) {
-                dataBase.addStudent(personStructuredData);
+                personDataBase.addStudent(personStructuredData);
                 return true;
             } else {
                 CheckData.printWrongParams(personStructuredData);
