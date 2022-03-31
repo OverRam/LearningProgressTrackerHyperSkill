@@ -3,10 +3,8 @@ package tracker;
 import tracker.Users.Student;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 
-public class DataBase {
+public class PersonDataBase {
     private int idPerson = 9999;
     private final HashMap<Integer, Student> studentDatabase = new HashMap<>();
 
