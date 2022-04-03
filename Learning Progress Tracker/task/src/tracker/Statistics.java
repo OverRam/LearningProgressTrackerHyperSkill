@@ -13,6 +13,10 @@ public class Statistics {
     private final List<Student> springLangInfo = new ArrayList<>();
     private final List<Student> dataBaseLangInfo = new ArrayList<>();
     private final List<Student> dSALangInfo = new ArrayList<>();
+    public final static int JAVA_MAX_POINTS = 600;
+    public final static int SPRING_MAX_POINTS = 550;
+    public final static int DATABASE_MAX_POINTS = 480;
+    public final static int DSA_MAX_POINTS = 400;
 
     private final PersonDataBase personDataBase;
     final String noDetails = "n/a";
@@ -50,12 +54,12 @@ public class Statistics {
         String hardest = averagePointsLang.get(1);
 
         System.out.printf("Type the name of a course to see details or 'back' to quit:\n" +
-                "Most popular: %s\n" +
-                "Least popular: %s\n" +
-                "Highest activity: %s\n" +
-                "Lowest activity: %s\n" +
-                "Easiest course: %s\n" +
-                "Hardest course: %s\n", mPopular, lPopular, hActivity, lActivity, easiest, hardest);
+                "Most popular:%s\n" +
+                "Least popular:%s\n" +
+                "Highest activity:%s\n" +
+                "Lowest activity:%s\n" +
+                "Easiest course:%s\n" +
+                "Hardest course:%s\n", mPopular, lPopular, hActivity, lActivity, easiest, hardest);
     }
 
     /**
@@ -189,22 +193,22 @@ public class Statistics {
             }
         });
 
-        langMap.put("Java", new DataLanguagesInfo(LanguagesEnum.JAVA, javaLangInfo, 600));
-        langMap.put("Spring", new DataLanguagesInfo(LanguagesEnum.SPRING, springLangInfo, 550));
-        langMap.put("Databases", new DataLanguagesInfo(LanguagesEnum.DATABASE, dataBaseLangInfo, 480));
-        langMap.put("DSA", new DataLanguagesInfo(LanguagesEnum.DSA, dSALangInfo, 400));
+        langMap.put("Java", new DataLanguagesInfo(LanguagesEnum.JAVA, javaLangInfo, JAVA_MAX_POINTS));
+        langMap.put("Spring", new DataLanguagesInfo(LanguagesEnum.SPRING, springLangInfo, SPRING_MAX_POINTS));
+        langMap.put("Databases", new DataLanguagesInfo(LanguagesEnum.DATABASE, dataBaseLangInfo, DATABASE_MAX_POINTS));
+        langMap.put("DSA", new DataLanguagesInfo(LanguagesEnum.DSA, dSALangInfo, DSA_MAX_POINTS));
     }
 
 
     void printDetailsLanguageStudents(String langToCheck) {
-        String textFormat = "%5d%3d        %3.1f %n"; //id, points, done course in %;
+        String textFormat = "%5d %3d        %3.1f%s"; //id, points, done course in %;
 
         switch (langToCheck.trim().toLowerCase()) {
             case "java":
                 System.out.println("Java\nid    points    completed");
                 javaLangInfo.sort(Comparator.comparing(Student::getJavaPoints).reversed().thenComparing(Student::getId));
                 javaLangInfo.forEach(s -> System.out.printf(textFormat, s.getId(), s.getJavaPoints(),
-                        (double) s.getJavaPoints() * 100 / langMap.get("Java").getMaxPoints()));
+                        (double) s.getJavaPoints() * 100 / langMap.get("Java").getMaxPoints(), "%\n"));
                 break;
 
             case "databases":
@@ -212,21 +216,21 @@ public class Statistics {
                 System.out.println("Databases\nid    points    completed");
                 dataBaseLangInfo
                         .forEach(s -> System.out.printf(textFormat, s.getId(), s.getDatabasesLangPoints(),
-                                (double) s.getDatabasesLangPoints() * 100 / langMap.get("Databases").getMaxPoints()));
+                                (double) s.getDatabasesLangPoints() * 100 / langMap.get("Databases").getMaxPoints(), "%\n"));
                 break;
 
             case "spring":
                 System.out.println("Spring\nid    points    completed");
                 springLangInfo
                         .forEach(s -> System.out.printf(textFormat, s.getId(), s.getSpringPoints(),
-                                (double) s.getSpringPoints() * 100 / langMap.get("Spring").getMaxPoints()));
+                                (double) s.getSpringPoints() * 100 / langMap.get("Spring").getMaxPoints(), "%\n"));
                 break;
 
             case "dsa":
                 System.out.println("DSA\nid    points    completed");
                 dSALangInfo
                         .forEach(s -> System.out.printf(textFormat, s.getId(), s.getDSAPoints(),
-                                (double) s.getDSAPoints() * 100 / langMap.get("DSA").getMaxPoints()));
+                                (double) s.getDSAPoints() * 100 / langMap.get("DSA").getMaxPoints(), "%\n"));
                 break;
 
             default:
@@ -234,7 +238,7 @@ public class Statistics {
         }
     }
 
-    static class DataLanguagesInfo {
+    private static class DataLanguagesInfo {
         private final LanguagesEnum langName;
         private final List<Student> studentList;
         private final int numOfMembers;
@@ -249,7 +253,12 @@ public class Statistics {
             this.maxPoints = maxPoints;
             completedTasks = setCompletedTasks();
             int sumOfStudentPointsThisLang = setAllStudentsPointsThisLang();
-            averagePointsPerCompletedTask = Math.floorDiv(sumOfStudentPointsThisLang, completedTasks);
+
+            if (sumOfStudentPointsThisLang > 0 && completedTasks > 0) {
+                averagePointsPerCompletedTask = Math.floorDiv(sumOfStudentPointsThisLang, completedTasks);
+            } else {
+                averagePointsPerCompletedTask = 0;
+            }
         }
 
         int getCompletedTasks() {
