@@ -8,14 +8,14 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class PointsHandler {
-    PersonDataBase personDataBase;
-    int numberOfProgrammingLanguages = LanguagesEnum.values().length;
+    private final PersonDataBase personDataBase;
+    private final int numberOfProgrammingLanguages = LanguagesEnum.values().length;
 
     public PointsHandler(PersonDataBase personDataBase) {
         this.personDataBase = personDataBase;
     }
 
-    private void addPoints(int id, List<Integer> points) {
+    void addPoints(int id, List<Integer> points) {
         Student student = personDataBase.getStudent(id);
 
         //format java, dsa, dB, spring
@@ -36,71 +36,71 @@ public class PointsHandler {
                 case "Spring":
                     student.addPointsSpring(points.get(i));
                     break;
-            }
-        }
+                default:
+                    throw new RuntimeException("Need add new enum");
 
-    }
-
-    void addingPointsInterface() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter an id and points or 'back' to return:");
-
-        boolean isNotBack = true;
-
-        while (isNotBack) {
-            String[] inpPointsInFormat = sc.nextLine().trim().split(" ");
-            if (CheckData.isBack(inpPointsInFormat[0])) {
-                isNotBack = false;
-            } else {
-                addPoints(inpPointsInFormat);
             }
         }
 
     }
 
     /**
-     * Format is: java dsa dB spring, like in {@link LanguagesEnum}
+     * Input format is string: id student java dsa dB spring..., like in {@link LanguagesEnum}
      **/
-    void addPoints(String[] pointsInFormat) {
-        int numbOfAllNeedParams = numberOfProgrammingLanguages + 1;
-        List<Integer> points = null;
-        List<Integer> inputLangPoints;
+    void addingPointsLoop() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter an id and points or 'back' to return:");
+
+        boolean isNotBack = true;
+
+        while (isNotBack) {
+            String[] input = sc.nextLine().trim().split(" ");
+
+            List<Integer> points = parsePointsToInt(Arrays.asList(Arrays.copyOfRange(input, 1, input.length)));
+
+            Integer id = parseIdToInt(input[0]);
 
 
-        boolean isUpdated = false;
+            if (CheckData.isBack(input[0])) {
+                isNotBack = false;
 
-        while (!isUpdated) {
-            int id = -1;
-            boolean isNegativePoints = true;
+            } else if (id == null || personDataBase.getStudent(id) == null) {
+                System.out.printf("No student is found for id=%s.\n", input[0]);
 
-            //try parse, check: num of params, negative numbers
-            try {
-                id = Integer.parseInt(pointsInFormat[0]);
-
-                inputLangPoints = Arrays.stream(pointsInFormat).skip(1)
-                        .map(Integer::parseInt)
-                        .collect(Collectors.toList());
-
-                if (pointsInFormat.length == numbOfAllNeedParams
-                        && inputLangPoints.size() == numberOfProgrammingLanguages) {
-
-                    points = inputLangPoints;
-                    isNegativePoints = points.stream().anyMatch(x -> x < 0);
-                }
-
-            } catch (NumberFormatException ignored) {
-            }
-
-            if (id < 0 || personDataBase.getDatabase().get(id) == null) {
-                System.out.printf("No student is found for id=%s.\n", pointsInFormat[0]);
-            } else if (isNegativePoints || points.size() != numberOfProgrammingLanguages) {
+            } else if (points == null || points.size() != numberOfProgrammingLanguages ||
+                    points.stream().anyMatch(x -> x < 0)) {
                 System.out.println("Incorrect points format.");
+
             } else {
                 addPoints(id, points);
                 System.out.println("Points updated.");
-                isUpdated = true;
             }
         }
+
+    }
+
+    /**
+     * @param pointsFormat is: java=int DSA=int Databases=int Spring=int
+     * @return a null if bad parameters
+     */
+    static List<Integer> parsePointsToInt(List<String> pointsFormat) {
+        int numOfLang = LanguagesEnum.values().length;
+
+        if (pointsFormat.size() == numOfLang) {
+            try {
+                return pointsFormat.stream().map(Integer::parseInt).collect(Collectors.toList());
+            } catch (NumberFormatException ignore) {
+            }
+        }
+        return null;
+    }
+
+    static Integer parseIdToInt(String id) {
+        try {
+            return Integer.parseInt(id);
+        } catch (NumberFormatException ignore) {
+        }
+        return null;
     }
 
 }
