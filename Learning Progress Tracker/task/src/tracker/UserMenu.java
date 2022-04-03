@@ -2,6 +2,7 @@ package tracker;
 
 import tracker.Users.Student;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class UserMenu {
@@ -12,10 +13,10 @@ public class UserMenu {
     void run() {
         personDataBase = new PersonDataBase();
         System.out.println("Learning Progress Tracker");
+
         String userInp = sc.nextLine().strip();
 
-        //String userInp = "statistics";
-        //testData();
+        //   testData();
 
         while (!userInp.equalsIgnoreCase("exit")) {
             menu(userInp);
@@ -51,7 +52,7 @@ public class UserMenu {
 
             case "add points":
                 PointsHandler pointsHandler = new PointsHandler(personDataBase);
-                pointsHandler.addingPointsInterface();
+                pointsHandler.addingPointsLoop();
                 break;
 
             case "find":
@@ -63,6 +64,9 @@ public class UserMenu {
                 statistics.menuLoop();
                 break;
 
+            case "notify":
+                personDataBase.notifyStudentsDoneCurse();
+                break;
             default:
                 System.out.println(userInp + " Unknown command!");
         }
@@ -102,13 +106,11 @@ public class UserMenu {
         }
     }
 
-
     private void printStudentScoreById(int id) {
         Student student = personDataBase.getDatabase().get(id);
         System.out.printf("%d points: Java=%d; DSA=%d; Databases=%d; Spring=%d\n", id,
                 student.getJavaPoints(), student.getDSAPoints(), student.getDatabasesLangPoints(), student.getSpringPoints());
     }
-
 
     void testData() {
         /////// test data
@@ -116,16 +118,17 @@ public class UserMenu {
         //10000
         personDataBase.addStudent(InputDataStructuring.studentDataStructuring("John Doe johnd@email.net"));
         //10001
-        personDataBase.addStudent(InputDataStructuring.studentDataStructuring("Jane Sark jspark@yahoo.com"));
+        personDataBase.addStudent(InputDataStructuring.studentDataStructuring("Jane Stark jspark@yahoo.com"));
 
 
         PointsHandler pointsHandler = new PointsHandler(personDataBase);
-        pointsHandler.addPoints("10000 8 7 7 5".split(" "));
-        pointsHandler.addPoints("10000 7 6 9 7".split(" "));
-        pointsHandler.addPoints("10000 6 5 5 0".split(" "));
+        pointsHandler.addPoints(10000, List.of(600, 400, 0, 0));
+        pointsHandler.addPoints(10000, List.of(7, 6, 9, 7));
+        pointsHandler.addPoints(10000, List.of(6, 5, 5, 0));
 
-        pointsHandler.addPoints("10001 8 0 8 6".split(" "));
-        pointsHandler.addPoints("10001 7 0 0 0".split(" "));
-        pointsHandler.addPoints("10001 9 0 0 5".split(" "));
+        pointsHandler.addPoints(10001, List.of(8, 0, 8, 6));
+        pointsHandler.addPoints(10001, List.of(7, 0, 0, 0));
+        pointsHandler.addPoints(10001, List.of(9, 0, 0, 5));
+
     }
 }
